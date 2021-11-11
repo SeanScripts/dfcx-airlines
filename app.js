@@ -147,7 +147,7 @@ function getFlightByID(flightID) {
 
 function getFlightsOneWay(startLocation, endLocation, date) {
 	return new Promise(resolve => {
-		db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [startLocation, endLocation, date], (err, rows) => {
+		db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ? ORDER BY price", [startLocation, endLocation, date], (err, rows) => {
 			if (err) {
 				console.error(err.message);
 				resolve(null);
@@ -167,14 +167,14 @@ function getFlightsOneWay(startLocation, endLocation, date) {
 
 function getFlightsRoundTrip(startLocation, endLocation, startDate, endDate) {
 	return new Promise(resolve => {
-		db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [startLocation, endLocation, startDate], (err, rows) => {
+		db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ? ORDER BY price", [startLocation, endLocation, startDate], (err, rows) => {
 			if (err) {
 				console.error(err.message);
 				resolve(null);
 			}
 			if (rows && rows.length > 0) {
 				// Found flights, now search for return flights
-				db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [endLocation, startLocation, endDate], (err2, rows2) => {
+				db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ? ORDER BY price", [endLocation, startLocation, endDate], (err2, rows2) => {
 					if (err2) {
 						console.error(err2.message);
 						resolve(null);
@@ -196,6 +196,17 @@ function getFlightsRoundTrip(startLocation, endLocation, startDate, endDate) {
 			}
 		});
 	});
+}
+
+function sortByProperty(property){  
+   return function(a,b){  
+      if(a[property] > b[property])  
+         return 1;  
+      else if(a[property] < b[property])  
+         return -1;  
+  
+      return 0;  
+   }  
 }
 
 // get user info
@@ -422,15 +433,27 @@ app.post('/query_flights', async function(req, res) {
 		var flights = await getFlightsRoundTrip(startLocation, endLocation, startDate, endDate);
 		if (flights != null) {
 			// Found flights
+			var minStartPrice = flights[0][0].price;
+			var maxStartPrice = flights[0][flights[0].length-1].price;
+			var minEndPrice = flights[1][0].price;
+			var maxEndPrice = flights[1][flights[1].length-1].price;
+			var minPrice = minStartPrice + minEndPrice;
+			var maxPrice = maxStartPrice + maxEndPrice;
+			
 			var webhookResponse =
 			{
 				"sessionInfo": {"parameters": {
-					"flights": flights
-					
-					
-					
-					
-					
+					"start_flights": flights[0],
+					"end_flights": flights[1],
+					"num_start_flights": flights[0].length,
+					"num_end_flights": flights[1].length,
+					"one_way": false,
+					"min_start_price": minStartPrice,
+					"max_start_price": maxStartPrice,
+					"min_end_price": minEndPrice,
+					"max_end_price": maxEndPrice,
+					"min_price": minPrice,
+					"max_price": maxPrice
 				}},
 				"payload": {}
 			};
@@ -455,16 +478,19 @@ app.post('/query_flights', async function(req, res) {
 		var flights = await getFlightsOneWay(startLocation, endLocation, startDate);
 		if (flights != null) {
 			// Found flights
+			var minPrice = flights[0][0].price;
+			var maxPrice = flights[0][flights[0].length-1].price;
+			
 			var webhookResponse =
 			{
 				"sessionInfo": {"parameters": {
-					"flights": flights
-					
-					
-					
-					
-					
-					
+					"start_flights": flights,
+					"end_flights": null,
+					"num_start_flights": flights.length,
+					"num_end_flights": 0,
+					"one_way": true,
+					"minprice": minPrice,
+					"maxprice": maxPrice
 				}},
 				"payload": {}
 			};
