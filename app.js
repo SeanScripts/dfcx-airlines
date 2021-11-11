@@ -200,7 +200,7 @@ function getFlightsRoundTrip(startLocation, endLocation, startDate, endDate) {
 app.post('/user_info', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
 	var userID = params.user_id;
-	var user = await getUser(userID;
+	var user = await getUser(userID);
 	console.log(user);
 	if (user != null) {
 		var webhookResponse =
