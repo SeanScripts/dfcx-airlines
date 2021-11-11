@@ -180,34 +180,37 @@ async function getFlightsRoundTrip(startLocation, endLocation, startDate, endDat
 }
 
 // get user info
-app.post('/user_info', async function(req, res) {
+app.post('/user_info', function(req, res) {
 	var params = req.body.sessionInfo.parameters;
 	var userID = params.user_id;
-	var user = await getUser(userID);
-	if (user != null) {
-		var webhookResponse =
-		{
-			"sessionInfo": {"parameters": {
-				"user_name": user.name,
-				"authenticated": true
-			}},
-			"payload": {}
-		};
-		res.writeHead(200);
-		res.end(JSON.stringify(webhookResponse));
-	}
-	else {
-		// User not found
-		var webhookResponse =
-		{
-			"sessionInfo": {"parameters": {
-				"error": "User not found"
-			}},
-			"payload": {}
-		};
-		res.writeHead(200);
-		res.end(JSON.stringify(webhookResponse));
-	}
+	getUser(userID).then((user) => {
+		console.log(user);
+		if (user != null) {
+			var webhookResponse =
+			{
+				"sessionInfo": {"parameters": {
+					"user_name": user.name,
+					"authenticated": true
+				}},
+				"payload": {}
+			};
+			res.writeHead(200);
+			res.end(JSON.stringify(webhookResponse));
+		}
+		else {
+			// User not found
+			var webhookResponse =
+			{
+				"sessionInfo": {"parameters": {
+					"error": "User not found"
+				}},
+				"payload": {}
+			};
+			res.writeHead(200);
+			res.end(JSON.stringify(webhookResponse));
+		}
+	});
+	
 });
 
 app.post('/booked_flights', async function(req, res) {
