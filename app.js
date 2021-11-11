@@ -22,6 +22,8 @@ var db = new sqlite3.Database(baseDirectory + '/dfcx_airlines.db', sqlite3.OPEN_
 	console.log('Connected to the sqlite database.');
 });
 
+// TODO: Calculate refundable amount based on date, and add the refund parameter as a response when asking to cancel or change flight
+
 function getUser(userID) {
 	return new Promise(resolve => {
 		db.get("SELECT * FROM User WHERE userID = ?", [userID], (err, row) => {
@@ -45,7 +47,7 @@ function getUser(userID) {
 
 function getBookedFlightIncludingCanceled(userID) {
 	return new Promise(resolve => {
-		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ?", [userID], (err, rows) => {
+		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID LEFT JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ?", [userID], (err, rows) => {
 			if (err) {
 				console.error(err.message);
 				resolve(null);
@@ -65,7 +67,7 @@ function getBookedFlightIncludingCanceled(userID) {
 
 function getBookedFlights(userID) {
 	return new Promise(resolve => {
-		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 0", [userID], (err, rows) => {
+		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID LEFT JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 0", [userID], (err, rows) => {
 			if (err) {
 				console.error(err.message);
 				resolve(null);
@@ -85,7 +87,7 @@ function getBookedFlights(userID) {
 
 function getCanceledFlights(userID) {
 	return new Promise(resolve => {
-		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 1", [userID], (err, rows) => {
+		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID LEFT JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 1", [userID], (err, rows) => {
 			if (err) {
 				console.error(err.message);
 				resolve(null);
@@ -105,7 +107,7 @@ function getCanceledFlights(userID) {
 
 function getBookedFlightByID(userID, bookingID) {
 	return new Promise(resolve => {
-		db.get("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.bookingID = ?", [userID, bookingID], (err, row) => {
+		db.get("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID LEFT JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.bookingID = ?", [userID, bookingID], (err, row) => {
 			if (err) {
 				console.error(err.message);
 				resolve(null);
