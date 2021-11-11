@@ -298,7 +298,7 @@ app.post('/validate_booking_id', async function(req, res) {
 					"user_name": user.name,
 					"authenticated": true,
 					"booking_id_valid": true,
-					"booked_flights": [booked_flight]
+					"booked_flights": [bookedFlight]
 				}},
 				"payload": {}
 			};
