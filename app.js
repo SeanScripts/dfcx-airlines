@@ -289,7 +289,7 @@ app.post('/validate_booking_id', async function(req, res) {
 	var bookingID = params.booking_id;
 	var user = await getUser(userID);
 	if (user != null) {
-		var bookedFlight = await getBookedFlightByID(userID);
+		var bookedFlight = await getBookedFlightByID(userID, bookingID);
 		if (bookedFlight != null) {
 			// User has booked flight, return the relevant data
 			var webhookResponse =
@@ -346,7 +346,7 @@ app.post('/cancel_flight', async function(req, res) {
 	var bookingID = params.booking_id;
 	var user = await getUser(userID);
 	if (user != null) {
-		var bookedFlight = await getBookedFlightByID(userID);
+		var bookedFlight = await getBookedFlightByID(userID, bookingID);
 		if (bookedFlight != null) {
 			// User has booked flight, cancel it
 			
