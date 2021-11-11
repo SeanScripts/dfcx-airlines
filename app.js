@@ -22,194 +22,210 @@ var db = new sqlite3.Database(baseDirectory + '/dfcx_airlines.db', sqlite3.OPEN_
 	console.log('Connected to the sqlite database.');
 });
 
-async function getUser(userID) {
-	db.get("SELECT * FROM User WHERE userID = ?", [userID], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (row) {
-			// User exists
-			console.log("Found user");
-			return row;
-		}
-		else {
-			console.log("No user with this ID");
-			return null;
-		}
+function getUser(userID) {
+	return new Promise(resolve => {
+		db.get("SELECT * FROM User WHERE userID = ?", [userID], (err, row) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (row) {
+				// User exists
+				console.log("Found user");
+				console.log(row);
+				resolve(row);
+			}
+			else {
+				console.log("No user with this ID");
+				resolve(null);
+			}
+		});
 	});
 }
 
-async function getBookedFlightIncludingCanceled(userID) {
-	db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ?", [userID], (err, rows) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (rows && rows.length > 0) {
-			// User has booked flights, return them
-			console.log("Found "+rows.length+" booked flights for user");
-			return rows;
-		}
-		else {
-			console.log("User has no booked flights");
-			return null;
-		}
+function getBookedFlightIncludingCanceled(userID) {
+	return new Promise(resolve => {
+		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ?", [userID], (err, rows) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (rows && rows.length > 0) {
+				// User has booked flights, return them
+				console.log("Found "+rows.length+" booked flights for user");
+				resolve(rows);
+			}
+			else {
+				console.log("User has no booked flights");
+				resolve(null);
+			}
+		});
 	});
 }
 
-async function getBookedFlights(userID) {
-	db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 0", [userID], (err, rows) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (rows && rows.length > 0) {
-			// User has booked flights, return them
-			console.log("Found "+rows.length+" booked flights for user");
-			return rows;
-		}
-		else {
-			console.log("User has no booked flights");
-			return null;
-		}
+function getBookedFlights(userID) {
+	return new Promise(resolve => {
+		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 0", [userID], (err, rows) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (rows && rows.length > 0) {
+				// User has booked flights, return them
+				console.log("Found "+rows.length+" booked flights for user");
+				resolve(rows);
+			}
+			else {
+				console.log("User has no booked flights");
+				resolve(null);
+			}
+		});
 	});
 }
 
-async function getCanceledFlights(userID) {
-	db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 1", [userID], (err, rows) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (rows && rows.length > 0) {
-			// User has booked flights, return them
-			console.log("Found "+rows.length+" booked flights for user");
-			return rows;
-		}
-		else {
-			console.log("User has no booked flights");
-			return null;
-		}
+function getCanceledFlights(userID) {
+	return new Promise(resolve => {
+		db.all("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, b.canceled AS canceled, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.canceled = 1", [userID], (err, rows) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (rows && rows.length > 0) {
+				// User has booked flights, return them
+				console.log("Found "+rows.length+" booked flights for user");
+				resolve(rows);
+			}
+			else {
+				console.log("User has no booked flights");
+				resolve(null);
+			}
+		});
 	});
 }
 
-async function getBookedFlightByID(userID, bookingID) {
-	db.get("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.bookingID = ?", [userID, bookingID], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (row) {
-			// User has booked flight, return it
-			console.log("Found booked flight by ID");
-			return row;
-		}
-		else {
-			console.log("User has no booked flight with this booking ID");
-			return null;
-		}
+function getBookedFlightByID(userID, bookingID) {
+	return new Promise(resolve => {
+		db.get("SELECT b.bookingID AS bookingID, b.userID AS userID, b.flightID AS flightID, b.returnFlightID AS returnFlightID, b.price AS totalPrice, f1.startLocation AS startFlightStartLocation, f1.endLocation AS startFlightEndLocation, f1.date as startFlightDate, f1.departure AS startFlightDeparture, f1.arrival AS startFlightArrival, f1.price AS startFlightPrice, f2.endLocation AS endFlightEndLocation, f2.date as endFlightDate, f2.departure AS endFlightDeparture, f2.arrival AS endFlightArrival, f2.price AS endFlightPrice FROM BookedFlight b JOIN Flight f1 ON b.flightID = f1.flightID JOIN Flight f2 ON b.returnFlightID = f2.flightID WHERE b.userID = ? AND b.bookingID = ?", [userID, bookingID], (err, row) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (row) {
+				// User has booked flight, return it
+				console.log("Found booked flight by ID");
+				resolve(row);
+			}
+			else {
+				console.log("User has no booked flight with this booking ID");
+				resolve(null);
+			}
+		});
 	});
 }
 
-async function getFlightByID(flightID) {
-	db.get("SELECT * FROM Flight WHERE flightID = ?", [flightID], (err, row) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (row) {
-			// Found flight
-			console.log("Found flight from ID");
-			return row;
-		}
-		else {
-			console.log("No flight with this ID");
-			return null;
-		}
+function getFlightByID(flightID) {
+	return new Promise(resolve => {
+		db.get("SELECT * FROM Flight WHERE flightID = ?", [flightID], (err, row) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (row) {
+				// Found flight
+				console.log("Found flight from ID");
+				resolve(row);
+			}
+			else {
+				console.log("No flight with this ID");
+				resolve(null);
+			}
+		});
 	});
 }
 
-async function getFlightsOneWay(startLocation, endLocation, date) {
-	db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [startLocation, endLocation, date], (err, rows) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (rows && rows.length > 0) {
-			// Found flights
-			console.log("Found "+rows.length+" compatible flights");
-			return rows;
-		}
-		else {
-			console.log("No flights matching these parameters");
-			return null;
-		}
+function getFlightsOneWay(startLocation, endLocation, date) {
+	return new Promise(resolve => {
+		db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [startLocation, endLocation, date], (err, rows) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (rows && rows.length > 0) {
+				// Found flights
+				console.log("Found "+rows.length+" compatible flights");
+				resolve(rows);
+			}
+			else {
+				console.log("No flights matching these parameters");
+				resolve(null);
+			}
+		});
 	});
 }
 
-async function getFlightsRoundTrip(startLocation, endLocation, startDate, endDate) {
-	db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [startLocation, endLocation, startDate], (err, rows) => {
-		if (err) {
-			console.error(err.message);
-			return null;
-		}
-		if (rows && rows.length > 0) {
-			// Found flights, now search for return flights
-			db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [endLocation, startLocation, endDate], (err2, rows2) => {
-				if (err2) {
-					console.error(err2.message);
-					return null;
-				}
-				if (rows2 && rows2.length > 0) {
-					// Found return flights, give both flights back
-					console.log("Found ("+rows.length+", "+rows2.length+") compatible flights");
-					return [rows, rows2];
-				}
-				else {
-					console.log("No return flights found matching these parameters");
-					return null;
-				}
-			});
-		}
-		else {
-			console.log("No flights matching these parameters");
-			return null;
-		}
+function getFlightsRoundTrip(startLocation, endLocation, startDate, endDate) {
+	return new Promise(resolve => {
+		db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [startLocation, endLocation, startDate], (err, rows) => {
+			if (err) {
+				console.error(err.message);
+				resolve(null);
+			}
+			if (rows && rows.length > 0) {
+				// Found flights, now search for return flights
+				db.all("SELECT * FROM Flight WHERE startLocation = ? AND endLocation = ? AND date = ?", [endLocation, startLocation, endDate], (err2, rows2) => {
+					if (err2) {
+						console.error(err2.message);
+						resolve(null);
+					}
+					if (rows2 && rows2.length > 0) {
+						// Found return flights, give both flights back
+						console.log("Found ("+rows.length+", "+rows2.length+") compatible flights");
+						resolve([rows, rows2]);
+					}
+					else {
+						console.log("No return flights found matching these parameters");
+						resolve(null);
+					}
+				});
+			}
+			else {
+				console.log("No flights matching these parameters");
+				resolve(null);
+			}
+		});
 	});
 }
 
 // get user info
-app.post('/user_info', function(req, res) {
+app.post('/user_info', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
 	var userID = params.user_id;
-	getUser(userID).then((user) => {
-		console.log(user);
-		if (user != null) {
-			var webhookResponse =
-			{
-				"sessionInfo": {"parameters": {
-					"user_name": user.name,
-					"authenticated": true
-				}},
-				"payload": {}
-			};
-			res.writeHead(200);
-			res.end(JSON.stringify(webhookResponse));
-		}
-		else {
-			// User not found
-			var webhookResponse =
-			{
-				"sessionInfo": {"parameters": {
-					"error": "User not found"
-				}},
-				"payload": {}
-			};
-			res.writeHead(200);
-			res.end(JSON.stringify(webhookResponse));
-		}
-	});
+	var user = await getUser(userID;
+	console.log(user);
+	if (user != null) {
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"user_name": user.name,
+				"authenticated": true
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
+	else {
+		// User not found
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"error": "User not found"
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
 	
 });
 
