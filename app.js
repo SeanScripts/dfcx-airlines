@@ -297,13 +297,8 @@ app.post('/validate_booking_id', async function(req, res) {
 				"sessionInfo": {"parameters": {
 					"user_name": user.name,
 					"authenticated": true,
-					
-					
-					
-					
-					
-					
-					
+					"booking_id_valid": true,
+					"booked_flights": [booked_flight]
 				}},
 				"payload": {}
 			};
@@ -372,9 +367,7 @@ app.post('/cancel_flight', async function(req, res) {
 						"sessionInfo": {"parameters": {
 							"user_name": user.name,
 							"authenticated": true,
-							
-							
-							
+							"success": true
 							
 							
 							
@@ -432,7 +425,7 @@ app.post('/query_flights', async function(req, res) {
 			var webhookResponse =
 			{
 				"sessionInfo": {"parameters": {
-					
+					"flights": flights
 					
 					
 					
@@ -465,7 +458,7 @@ app.post('/query_flights', async function(req, res) {
 			var webhookResponse =
 			{
 				"sessionInfo": {"parameters": {
-					
+					"flights": flights
 					
 					
 					
@@ -533,10 +526,8 @@ app.post('/book_flights', async function(req, res) {
 							"sessionInfo": {"parameters": {
 								"user_name": user.name,
 								"authenticated": true,
-								
-								
-								
-								
+								"success": true,
+								"booking_id": this.lastID
 							}},
 							"payload": {}
 						};
@@ -586,10 +577,8 @@ app.post('/book_flights', async function(req, res) {
 							"sessionInfo": {"parameters": {
 								"user_name": user.name,
 								"authenticated": true,
-								
-								
-								
-								
+								"success": true,
+								"booking_id": this.lastID
 							}},
 							"payload": {}
 						};
