@@ -424,7 +424,8 @@ app.post('/set_booked_flight_parameters', async function(req, res) {
 				"start_date": bookedFlights[index].startFlightDate,
 				"end_date": bookedFlights[index].endFlightDate,
 				"total_price": bookedFlights[index].totalPrice,
-				"booking_id": bookedFlights[index].bookingID
+				"booking_id": bookedFlights[index].bookingID,
+				"one_way": (bookedFlights[index].returnFlightID != null)
 			}},
 			"payload": {}
 		};
