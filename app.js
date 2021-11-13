@@ -424,12 +424,12 @@ app.post('/cancel_flight', async function(req, res) {
 // query flights
 app.post('/query_flights', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
-	var startLocation = params.startLocation;
-	var endLocation = params.endLocation;
-	var startDate = params.startDate;
+	var startLocation = params.start_location;
+	var endLocation = params.end_location;
+	var startDate = params.start_date;
 	if (params.endDate != null) {
 		// Round trip
-		var endDate = params.endDate;
+		var endDate = params.end_date;
 		var flights = await getFlightsRoundTrip(startLocation, endLocation, startDate, endDate);
 		if (flights != null) {
 			// Found flights
@@ -489,8 +489,8 @@ app.post('/query_flights', async function(req, res) {
 					"num_start_flights": flights.length,
 					"num_end_flights": 0,
 					"one_way": true,
-					"minprice": minPrice,
-					"maxprice": maxPrice
+					"min_price": minPrice,
+					"max_price": maxPrice
 				}},
 				"payload": {}
 			};
@@ -524,7 +524,7 @@ app.post('/book_flights', async function(req, res) {
 			// Flight found
 			if (params.returnFlightID != null) {
 				// Round trip
-				var returnFlightID = params.return_flight.id;
+				var returnFlightID = params.return_flight_id;
 				var returnFlight = await getFlightByID(returnFlightID);
 				if (returnFlight != null) {
 					// Book both flights
