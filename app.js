@@ -478,8 +478,8 @@ app.post('/query_flights', async function(req, res) {
 		var flights = await getFlightsOneWay(startLocation, endLocation, startDate);
 		if (flights != null) {
 			// Found flights
-			var minPrice = flights[0][0].price;
-			var maxPrice = flights[0][flights[0].length-1].price;
+			var minPrice = flights[0].price;
+			var maxPrice = flights[flights[0].length-1].price;
 			
 			var webhookResponse =
 			{
