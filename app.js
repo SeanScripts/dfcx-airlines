@@ -479,7 +479,7 @@ app.post('/query_flights', async function(req, res) {
 		if (flights != null) {
 			// Found flights
 			var minPrice = flights[0].price;
-			var maxPrice = flights[flights[0].length-1].price;
+			var maxPrice = flights[flights.length-1].price;
 			
 			var webhookResponse =
 			{
