@@ -345,6 +345,72 @@ app.post('/validate_booking_id', async function(req, res) {
 	}
 });
 
+// This is so stupid.
+// $session.params.start_flights[0] -> string of json that can't be accessed properly
+// $session.params.start_flights[$session.params.start_index] -> the whole stringified json of start flights, followed by the literal [0]
+// Dialogflow is so fucking stupid sometimes.
+app.post('/set_start_flight_parameters', async function(req, res) {
+	var params = req.body.sessionInfo.parameters;
+	var startFlights = params.start_flights;
+	var startIndex = params.start_index;
+	if (startFlights != null || startIndex >= startFlights.length) {
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"start_price": startFlights[startIndex].price,
+				"start_departure": startFlights[startIndex].departure,
+				"start_arrival": startFlights[startIndex].arrival,
+				"flight_id": startFlights[startIndex].flightID
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
+	else {
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"error": "Start flights is undefined or index outside of range"
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
+});
+
+app.post('/set_end_flight_parameters', async function(req, res) {
+	var params = req.body.sessionInfo.parameters;
+	var endFlights = params.end_flights;
+	var endIndex = params.end_index;
+	if (endFlights != null || endIndex >= endFlights.length) {
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"end_price": endFlights[endIndex].price,
+				"end_departure": endFlights[endIndex].departure,
+				"end_arrival": endFlights[endIndex].arrival,
+				"return_flight_id": endFlights[endIndex].flightID
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
+	else {
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"error": "End flights is undefined or index outside of range"
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
+});
+
 // cancel flight
 app.post('/cancel_flight', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
