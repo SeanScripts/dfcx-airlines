@@ -411,6 +411,39 @@ app.post('/set_end_flight_parameters', async function(req, res) {
 	}
 });
 
+app.post('/set_booked_flight_parameters', async function(req, res) {
+	var params = req.body.sessionInfo.parameters;
+	var bookedFlights = params.booked_flights;
+	var index = params.index;
+	if (bookedFlights != null || index >= bookedFlights.length) {
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"start_location": bookedFlights[index].startFlightStartLocation,
+				"end_location": bookedFlights[index].startFlightEndLocation,
+				"start_date": bookedFlights[index].startFlightDate,
+				"end_date": bookedFlights[index].endFlightDate,
+				"total_price": bookedFlights[index].totalPrice,
+				"booking_id": bookedFlights[index].bookingID
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
+	else {
+		var webhookResponse =
+		{
+			"sessionInfo": {"parameters": {
+				"error": "Booked flights is undefined or index outside of range"
+			}},
+			"payload": {}
+		};
+		res.writeHead(200);
+		res.end(JSON.stringify(webhookResponse));
+	}
+});
+
 // cancel flight
 app.post('/cancel_flight', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
