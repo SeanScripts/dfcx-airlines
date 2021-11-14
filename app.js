@@ -250,18 +250,42 @@ app.post('/booked_flights', async function(req, res) {
 		var bookedFlights = await getBookedFlights(userID);
 		if (bookedFlights != null) {
 			// User has booked flights, return the relevant data
-			var webhookResponse =
-			{
-				"sessionInfo": {"parameters": {
-					"user_name": user.name,
-					"authenticated": true,
-					"booked_flights": bookedFlights,
-					"num_flights": bookedFlights.length
-				}},
-				"payload": {}
-			};
-			res.writeHead(200);
-			res.end(JSON.stringify(webhookResponse));
+			if (bookedFlights.length > 1) {
+				var webhookResponse =
+				{
+					"sessionInfo": {"parameters": {
+						"user_name": user.name,
+						"authenticated": true,
+						"booked_flights": bookedFlights,
+						"num_flights": bookedFlights.length
+					}},
+					"payload": {}
+				};
+				res.writeHead(200);
+				res.end(JSON.stringify(webhookResponse));
+			}
+			else {
+				var webhookResponse =
+				{
+					"sessionInfo": {"parameters": {
+						"user_name": user.name,
+						"authenticated": true,
+						"booked_flights": bookedFlights,
+						"num_flights": bookedFlights.length,
+						"start_location": bookedFlights[0].startFlightstartLocation,
+						"end_location": bookedFlights[0].startFlightEndLocation,
+						"one_way": (bookedFlights[0].returnFlightID == null),
+						"start_date": bookedFlights[0].startFlightDate,
+						"end_date": bookedFlights[0].endFlightDate,
+						"total_price": bookedFlights[0].totalPrice,
+						"booking_id": bookedFlights[0].bookingID
+					}},
+					"payload": {}
+				};
+				res.writeHead(200);
+				res.end(JSON.stringify(webhookResponse));
+			}
+			
 		}
 		else {
 			// User has no booked flights, not an error though (?) or maybe webhook error
@@ -309,7 +333,14 @@ app.post('/validate_booking_id', async function(req, res) {
 					"user_name": user.name,
 					"authenticated": true,
 					"booking_id_valid": true,
-					"booked_flights": [bookedFlight]
+					"booked_flights": [bookedFlight],
+					"start_location": bookedFlight.startFlightstartLocation,
+					"end_location": bookedFlight.startFlightEndLocation,
+					"one_way": (bookedFlight.returnFlightID == null),
+					"start_date": bookedFlight.startFlightDate,
+					"end_date": bookedFlight.endFlightDate,
+					"total_price": bookedFlight.totalPrice,
+					"booking_id": bookedFlight.bookingID
 				}},
 				"payload": {}
 			};
