@@ -498,6 +498,10 @@ app.post('/cancel_flight', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
 	var userID = params.user_id;
 	var bookingID = params.booking_id;
+	var oldBookingID = params.old_booking_id;
+	if (oldBookingID != null) {
+		bookingID = oldBookingID;
+	}
 	var user = await getUser(userID);
 	if (user != null) {
 		var bookedFlight = await getBookedFlightByID(userID, bookingID);
