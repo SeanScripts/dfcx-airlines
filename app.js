@@ -214,7 +214,7 @@ app.post('/user_info', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
 	var userID = params.user_id;
 	var user = await getUser(userID);
-	console.log(user);
+	//console.log(user);
 	if (user != null) {
 		var webhookResponse =
 		{
@@ -334,7 +334,7 @@ app.post('/validate_booking_id', async function(req, res) {
 					"authenticated": true,
 					"booking_id_valid": true,
 					"booked_flights": [bookedFlight],
-					"start_location": bookedFlight.startFlightstartLocation,
+					"start_location": bookedFlight.startFlightStartLocation,
 					"end_location": bookedFlight.startFlightEndLocation,
 					"one_way": (bookedFlight.returnFlightID == null),
 					"start_date": bookedFlight.startFlightDate,
@@ -474,6 +474,23 @@ app.post('/set_booked_flight_parameters', async function(req, res) {
 		res.writeHead(200);
 		res.end(JSON.stringify(webhookResponse));
 	}
+});
+
+// Literally just does subtraction. Also something not possible in DFCX, because it auto-casts numbers to strings, and then subtraction no longer works on them. And there is no function to parse strings back to numbers.
+app.post('/apply_refund', async function(req, res) {
+	var params = req.body.sessionInfo.parameters;
+	var price = params.total_price;
+	var refund = params.refund;
+	var net = price - refund;
+	var webhookResponse =
+	{
+		"sessionInfo": {"parameters": {
+			"net_price": net
+		}},
+		"payload": {}
+	};
+	res.writeHead(200);
+	res.end(JSON.stringify(webhookResponse));
 });
 
 // cancel flight
