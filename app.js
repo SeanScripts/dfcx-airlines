@@ -489,11 +489,14 @@ app.post('/set_booked_flight_parameters', async function(req, res) {
 });
 
 // Literally just does subtraction. Also something not possible in DFCX, because it auto-casts numbers to strings, and then subtraction no longer works on them. And there is no function to parse strings back to numbers.
-app.post('/apply_refund', async function(req, res) {
+// Turns out addition is also something that it's incapable of in some instances, so I guess this is doing that now too.
+app.post('/calculate', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
-	var price = params.total_price;
-	var refund = params.refund;
-	var net = price - refund;
+	var startPrice = parseInt(params.start_price);
+	var endPrice = parseInt(params.end_price);
+	var total = startPrice + endPrice;
+	var refund = parseInt(params.refund);
+	var net = total - refund;
 	var credit = 0;
 	if (net < 0) {
 		credit = -net;
@@ -501,6 +504,7 @@ app.post('/apply_refund', async function(req, res) {
 	var webhookResponse =
 	{
 		"sessionInfo": {"parameters": {
+			"total_price": total,
 			"net_price": net,
 			"credit_price": credit
 		}},
