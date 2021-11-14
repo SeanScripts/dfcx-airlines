@@ -690,7 +690,7 @@ app.post('/book_flights', async function(req, res) {
 		var flight = await getFlightByID(flightID);
 		if (flight != null) {
 			// Flight found
-			if (params.returnFlightID != null) {
+			if (params.return_flight_id != null) {
 				// Round trip
 				var returnFlightID = params.return_flight_id;
 				var returnFlight = await getFlightByID(returnFlightID);
