@@ -272,7 +272,7 @@ app.post('/booked_flights', async function(req, res) {
 						"authenticated": true,
 						"booked_flights": bookedFlights,
 						"num_flights": bookedFlights.length,
-						"start_location": bookedFlights[0].startFlightstartLocation,
+						"start_location": bookedFlights[0].startFlightStartLocation,
 						"end_location": bookedFlights[0].startFlightEndLocation,
 						"one_way": (bookedFlights[0].returnFlightID == null),
 						"start_date": bookedFlights[0].startFlightDate,
