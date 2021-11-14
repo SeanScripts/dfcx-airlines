@@ -591,7 +591,7 @@ app.post('/query_flights', async function(req, res) {
 	var startLocation = params.start_location;
 	var endLocation = params.end_location;
 	var startDate = params.start_date;
-	if (params.endDate != null) {
+	if (params.end_date != null) {
 		// Round trip
 		var endDate = params.end_date;
 		var flights = await getFlightsRoundTrip(startLocation, endLocation, startDate, endDate);
