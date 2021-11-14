@@ -278,7 +278,11 @@ app.post('/booked_flights', async function(req, res) {
 						"start_date": bookedFlights[0].startFlightDate,
 						"end_date": bookedFlights[0].endFlightDate,
 						"total_price": bookedFlights[0].totalPrice,
-						"booking_id": bookedFlights[0].bookingID
+						"booking_id": bookedFlights[0].bookingID,
+						"start_departure": bookedFlights[0].startFlightDeparture,
+						"start_arrival": bookedFlights[0].startFlightArrival,
+						"end_departure": bookedFlights[0].endFlightDeparture,
+						"end_arrival": bookedFlights[0].endFlightArrival
 					}},
 					"payload": {}
 				};
@@ -340,7 +344,11 @@ app.post('/validate_booking_id', async function(req, res) {
 					"start_date": bookedFlight.startFlightDate,
 					"end_date": bookedFlight.endFlightDate,
 					"total_price": bookedFlight.totalPrice,
-					"booking_id": bookedFlight.bookingID
+					"booking_id": bookedFlight.bookingID,
+					"start_departure": bookedFlight.startFlightDeparture,
+					"start_arrival": bookedFlight.startFlightArrival,
+					"end_departure": bookedFlight.endFlightDeparture,
+					"end_arrival": bookedFlight.endFlightArrival
 				}},
 				"payload": {}
 			};
@@ -456,7 +464,11 @@ app.post('/set_booked_flight_parameters', async function(req, res) {
 				"end_date": bookedFlights[index].endFlightDate,
 				"total_price": bookedFlights[index].totalPrice,
 				"booking_id": bookedFlights[index].bookingID,
-				"one_way": (bookedFlights[index].returnFlightID == null)
+				"one_way": (bookedFlights[index].returnFlightID == null),
+				"start_departure": bookedFlights[index].startFlightDeparture,
+				"start_arrival": bookedFlights[index].startFlightArrival,
+				"end_departure": bookedFlights[index].endFlightDeparture,
+				"end_arrival": bookedFlights[index].endFlightArrival
 			}},
 			"payload": {}
 		};
@@ -536,11 +548,6 @@ app.post('/cancel_flight', async function(req, res) {
 							"user_name": user.name,
 							"authenticated": true,
 							"success": true
-							
-							
-							
-							
-							
 						}},
 						"payload": {}
 					};
@@ -801,16 +808,6 @@ app.post('/book_flights', async function(req, res) {
 });
 
 app.post('/wake', async function(req, res) {
-	/*
-	db = new sqlite3.Database(baseDirectory + '/dfcx_airlines.db', sqlite3.OPEN_READWRITE, (err) => {
-		if (err) {
-			return console.error(err.message);
-		}
-		console.log('Connected to the sqlite database.');
-		res.writeHead(200);
-		res.end('ok');
-	});
-	*/
 	res.writeHead(200);
 	res.end('ok');
 });
