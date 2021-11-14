@@ -482,10 +482,15 @@ app.post('/apply_refund', async function(req, res) {
 	var price = params.total_price;
 	var refund = params.refund;
 	var net = price - refund;
+	var credit = 0;
+	if (net < 0) {
+		credit = -net;
+	}
 	var webhookResponse =
 	{
 		"sessionInfo": {"parameters": {
-			"net_price": net
+			"net_price": net,
+			"credit_price": credit
 		}},
 		"payload": {}
 	};
