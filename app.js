@@ -493,8 +493,12 @@ app.post('/set_booked_flight_parameters', async function(req, res) {
 app.post('/calculate', async function(req, res) {
 	var params = req.body.sessionInfo.parameters;
 	var startPrice = parseInt(params.start_price);
-	var endPrice = parseInt(params.end_price);
-	var total = startPrice + endPrice;
+	var oneWay = params.one_way;
+	var total = startPrice;
+	if (!oneWay) {
+		var endPrice = parseInt(params.end_price);
+		total = startPrice + endPrice;
+	}
 	var refund = parseInt(params.refund);
 	var net = total - refund;
 	var credit = 0;
